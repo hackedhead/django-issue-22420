@@ -1,0 +1,42 @@
+version: "2.4"
+services:
+  web:
+    build: .
+    ports:
+     - "8000:8000"
+    volumes:
+     - .:/code
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - "DATABASE_URL=postgres://pguser:ooNoh8vu:cho6ach#o9zeephae7phu@db/issue22420"
+      - "SECRET_KEY=ac{ac3Xeith9ju2cee.bohlai_y0Je9ohkee3eegh.ai9ohr3beetha8"
+      - "DJANGO_SETTINGS_MODULE=issue_22420.settings"
+      - "DEBUG=True"
+      - "DJANGO_LOG_LEVEL=DEBUG"
+  manage:
+    build: .
+    volumes:
+     - .:/code
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - "DATABASE_URL=postgres://pguser:ooNoh8vu:cho6ach#o9zeephae7phu@db/issue22420"
+      - "SECRET_KEY=ac{ac3Xeith9ju2cee.bohlai_y0Je9ohkee3eegh.ai9ohr3beetha8"
+      - "DJANGO_SETTINGS_MODULE=issue_22420.settings"
+    entrypoint: ['python', 'manage.py' ]
+  db:
+    image: postgres:12.2
+    ports:
+     - "15432:5432"
+    environment:
+     - POSTGRES_DB=issue22420
+     - POSTGRES_PASSWORD=ooNoh8vu:cho6ach#o9zeephae7phu
+     - POSTGRES_USER=pguser
+    healthcheck:
+      interval: 5s
+      timeout: 10s
+      start_period: 20s
+      test: ['CMD', 'pg_isready', '-U' , 'pguser', '-d', 'issue22420']
